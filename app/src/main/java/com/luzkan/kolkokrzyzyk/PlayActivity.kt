@@ -18,11 +18,15 @@ class PlayActivity : AppCompatActivity() {
     }
 
     fun turnManager(){
+
+        checkWin()
+
         if(currentPlayer == 1){
             currentPlayer = 2
         }else{
             currentPlayer = 1
         }
+
     }
 
     var player1 = ArrayList<Int>()
@@ -30,13 +34,66 @@ class PlayActivity : AppCompatActivity() {
 
     fun checkWin(){
 
+        var winner = 0
+
+        // Super cool algorithmTM by me
+        // The Game is super stupid if we look for threes so, im making the win condition for four cells
+        if(currentPlayer == 1) {
+            for (k in 10..50 step 10) {
+                for (i in 1..5) {
+                    if (i <= 2) {
+                        if (player1.contains(k + i) && player1.contains(k + i + 1) && player1.contains(k + i + 2) && player1.contains(k + i + 3))
+                            winner = 1
+                    }
+                    if (k <= 20) {
+                        if (player1.contains(k + i) && player1.contains(k + i + 10) && player1.contains(k + i + 20) && player1.contains(k + i + 30))
+                            winner = 1
+                    }
+                    if (k <= 20 && i <= 2) {
+                        if (player1.contains(k + i) && player1.contains(k + i + 11) && player1.contains(k + i + 22) && player1.contains(k + i + 33))
+                            winner = 1
+                    }
+                }
+            }
+        }
+
+        if(currentPlayer == 2) {
+            for (k in 10..50 step 10) {
+                for (i in 1..5) {
+                    if (i <= 2) {
+                        if (player2.contains(k + i) && player2.contains(k + i + 1) && player2.contains(k + i + 2) && player2.contains(k + i + 3))
+                            winner = 2
+                    }
+                    if (k <= 20) {
+                        if (player2.contains(k + i) && player2.contains(k + i + 10) && player2.contains(k + i + 20) && player2.contains(k + i + 30))
+                            winner = 2
+                    }
+                    if (k <= 20 && i <= 2) {
+                        if (player2.contains(k + i) && player2.contains(k + i + 11) && player2.contains(k + i + 22) && player2.contains(k + i + 33))
+                            winner = 2
+                    }
+                }
+            }
+        }
+
+        if(winner != 0) {
+            if(winner == 1){
+                Toast.makeText(this, "Player 1 has won the game!", Toast.LENGTH_LONG).show()
+            }else{
+                Toast.makeText(this, "Player 2 has won the game!", Toast.LENGTH_LONG).show()
+            }
+        }
+
     }
+
+
 
 
     fun butClick(view: View) {
 
         val butSelected = view as Button
         var cellID = 0
+
 
         when (butSelected.id) {
             R.id.button11 -> cellID = 11
@@ -71,7 +128,7 @@ class PlayActivity : AppCompatActivity() {
         }
 
         // Debug; to be removed later or rephrased to something cool for user
-        Toast.makeText(this, "Cell ID: " + cellID, Toast.LENGTH_LONG).show()
+        // Toast.makeText(this, "ID: " + cellID, Toast.LENGTH_LONG).show()
         madePlay(cellID, butSelected)
     }
 
