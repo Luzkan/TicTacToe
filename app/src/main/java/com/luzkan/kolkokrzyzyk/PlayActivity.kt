@@ -23,8 +23,10 @@ class PlayActivity : AppCompatActivity() {
 
         if(currentPlayer == 1){
             currentPlayer = 2
+            whoseTurn.text = "Player 2"
         }else{
             currentPlayer = 1
+            whoseTurn.text = "Player 1"
         }
 
     }
