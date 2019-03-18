@@ -29,12 +29,14 @@ class MainActivity : AppCompatActivity() {
 
         playAI.setOnClickListener{
             val intent = Intent(this,PlayActivity::class.java)
-            startActivity(intent);
+            intent.putExtra("aiMode", true)
+            startActivity(intent)
         }
 
         playVS.setOnClickListener{
             val intent = Intent(this,PlayActivity::class.java)
-            startActivity(intent);
+            intent.putExtra("aiMode", false)
+            startActivity(intent)
         }
 
     }
