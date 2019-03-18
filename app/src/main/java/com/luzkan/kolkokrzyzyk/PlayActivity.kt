@@ -23,10 +23,10 @@ class PlayActivity : AppCompatActivity() {
 
         if(currentPlayer == 1){
             currentPlayer = 2
-            whoseTurn.text = "Player 2"
+            whoseTurn.text = "Player Red"
         }else{
             currentPlayer = 1
-            whoseTurn.text = "Player 1"
+            whoseTurn.text = "Player Blue"
         }
 
     }
@@ -87,10 +87,7 @@ class PlayActivity : AppCompatActivity() {
         }
 
     }
-
-
-
-
+    
     fun butClick(view: View) {
 
         val butSelected = view as Button
@@ -137,19 +134,21 @@ class PlayActivity : AppCompatActivity() {
     private fun madePlay(cellID: Int, butSelected: Button) {
 
         if(currentPlayer == 1){
-            butSelected.text = "X"
+            //butSelected.text = "X"
             butSelected.setBackgroundColor(Color.BLUE)
             player1.add(cellID)
             turnManager()
         }else{
-            butSelected.text = "O"
-            butSelected.setBackgroundColor(Color.GREEN)
+            //butSelected.text = "O"
+            butSelected.setBackgroundColor(Color.RED)
             player2.add(cellID)
             turnManager()
         }
 
         butSelected.isEnabled = false
     }
+
+
 
 
 }

@@ -3,7 +3,7 @@
     <string name="title_home">Home</string>
     <string name="title_reset">Reset</string>
     <string name="turn">Turn:</string>
-    <string name="player_one">Player One</string>
+    <string name="player">Player Blue</string>
     <string name="ai">AI</string>
     <string name="vs">VS</string>
     <string name="tic_tac_toe">Tic Tac Toe</string>

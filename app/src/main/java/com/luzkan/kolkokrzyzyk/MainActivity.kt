@@ -11,11 +11,9 @@ class MainActivity : AppCompatActivity() {
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
-                message.setText(R.string.title_home)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_reset -> {
-                message.setText(R.string.title_reset)
                 return@OnNavigationItemSelectedListener true
             }
         }
