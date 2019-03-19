@@ -135,6 +135,10 @@ class PlayActivity : AppCompatActivity() {
                         if (player1.contains(k + i) && player1.contains(k + i + 11) && player1.contains(k + i + 22) && player1.contains(k + i + 33))
                             winner = 1
                     }
+                    if (k >= 40 && i <= 5) {
+                        if (player1.contains(k + i) && player1.contains(k + i - 9) && player1.contains(k + i - 18) && player1.contains(k + i - 27))
+                            winner = 1
+                    }
                 }
             }
         }
@@ -152,6 +156,10 @@ class PlayActivity : AppCompatActivity() {
                     }
                     if (k <= 20 && i <= 2) {
                         if (player2.contains(k + i) && player2.contains(k + i + 11) && player2.contains(k + i + 22) && player2.contains(k + i + 33))
+                            winner = 2
+                    }
+                    if (k >= 40 && i <= 5) {
+                        if (player2.contains(k + i) && player2.contains(k + i - 9) && player2.contains(k + i - 18) && player2.contains(k + i - 27))
                             winner = 2
                     }
                 }
@@ -179,7 +187,7 @@ class PlayActivity : AppCompatActivity() {
         // Go for a random move
         val r = Random()
         val rand = r.nextInt(emptyCells.size-0)+0
-        var cellID = emptyCells[rand]
+        var cellID: Int
         val butSelected:Button
 
         // Change from random to algorithmic move if possible
@@ -246,46 +254,311 @@ class PlayActivity : AppCompatActivity() {
                         }
                     }
                 }
+                if (k >= 40 && i <= 5) {
+                    if (player2.contains(k + i) && player2.contains(k + i - 9) && player2.contains(k + i + 18)) {
+                        if (emptyCells.contains(k + i - 27)) {
+                            if (k + i - 27 >= 11) {
+                                cellID = k + i - 27
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                        if (emptyCells.contains(k + i + 9)) {
+                            if (k + i + 9 <= 55) {
+                                cellID = k + i + 9
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        /*
-        // Check for almost win
+        // Check for player win
+        for (k in 10..50 step 10) {
+            for (i in 1..5) {
+                if (i <= 3) {
+                    if (player1.contains(k + i) && player1.contains(k + i + 1) && player1.contains(k + i + 2)) {
+                        if (emptyCells.contains(k + i - 1)) {
+                            if (k + i - 1 >= 11) {
+                                cellID = k + i - 1
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                        if (emptyCells.contains(k + i + 3)) {
+                            if (k + i + 3 <= 55) {
+                                cellID = k + i + 3
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                    }
+                }
+                if (k <= 30) {
+                    if (player1.contains(k + i) && player1.contains(k + i + 10) && player1.contains(k + i + 20)) {
+                        if (emptyCells.contains(k + i - 10)) {
+                            if (k + i - 10 >= 11) {
+                                cellID = k + i - 10
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                        if (emptyCells.contains(k + i + 30)) {
+                            if (k + i + 30 <= 55) {
+                                cellID = k + i + 30
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                    }
+                }
+                if (k <= 30 && i <= 3) {
+                    if (player1.contains(k + i) && player1.contains(k + i + 11) && player1.contains(k + i + 22)) {
+                        if (emptyCells.contains(k + i - 11)) {
+                            if (k + i - 11 >= 11) {
+                                cellID = k + i - 11
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                        if (emptyCells.contains(k + i + 33)) {
+                            if (k + i + 33 <= 55) {
+                                cellID = k + i + 33
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                    }
+                }
+                if (k >= 40 && i <= 5) {
+                    if (player1.contains(k + i) && player1.contains(k + i - 9) && player1.contains(k + i - 18)) {
+                        if (emptyCells.contains(k + i - 27)) {
+                            if (k + i - 27 >= 11) {
+                                cellID = k + i - 27
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                        if (emptyCells.contains(k + i + 9)) {
+                            if (k + i + 9 <= 55) {
+                                cellID = k + i + 9
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Check if player almost wins logic
         for (k in 10..50 step 10) {
             for (i in 1..5) {
                 if (i <= 4) {
-                    if (player2.contains(k + i) && player2.contains(k + i + 1))
-                        if(emptyCells.contains(k+i-1)){
-                            madePlay(k+i-1, butSelected)
+                    if (player1.contains(k + i) && player1.contains(k + i + 1)) {
+                        if (emptyCells.contains(k + i - 1)) {
+                            if (k + i - 1 >= 11) {
+                                cellID = k + i - 1
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
                         }
-                        if(emptyCells.contains(k+i+3)){
-                            madePlay(k+i+3, butSelected)
+                        if (emptyCells.contains(k + i + 2)) {
+                            if (k + i + 3 <= 55) {
+                                cellID = k + i + 2
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
                         }
+                    }
+                }
+                if (k <= 40) {
+                    if (player1.contains(k + i) && player1.contains(k + i + 10)) {
+                        if (emptyCells.contains(k + i - 10)) {
+                            if (k + i - 10 >= 11) {
+                                cellID = k + i - 10
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                        if (emptyCells.contains(k + i + 20)) {
+                            if (k + i + 30 <= 55) {
+                                cellID = k + i + 20
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                    }
+                }
+                if (k <= 40 && i <= 4) {
+                    if (player1.contains(k + i) && player1.contains(k + i + 11)) {
+                        if (emptyCells.contains(k + i - 11)) {
+                            if (k + i - 11 >= 11) {
+                                cellID = k + i - 11
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                        if (emptyCells.contains(k + i + 22)) {
+                            if (k + i + 22 <= 55) {
+                                cellID = k + i + 22
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                    }
+                }
+                if (k <= 50 && i <= 5) {
+                    if (player1.contains(k + i) && player1.contains(k + i - 9)) {
+                        if (emptyCells.contains(k + i - 18)) {
+                            if (k + i - 18 >= 11) {
+                                cellID = k + i - 18
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                        if (emptyCells.contains(k + i + 9)) {
+                            if (k + i + 9 <= 55) {
+                                cellID = k + i + 9
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Check for own almost win
+        for (k in 10..50 step 10) {
+            for (i in 1..5) {
+                if (i <= 4) {
+                    if (player2.contains(k + i) && player2.contains(k + i + 1)) {
+                        if (emptyCells.contains(k + i - 1)) {
+                            if (k + i - 1 >= 11) {
+                                cellID = k + i - 1
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                        if (emptyCells.contains(k + i + 2)) {
+                            if (k + i + 3 <= 55) {
+                                cellID = k + i + 2
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                    }
                 }
                 if (k <= 40) {
                     if (player2.contains(k + i) && player2.contains(k + i + 10)) {
                         if (emptyCells.contains(k + i - 10)) {
-                            madePlay(k + i - 10, butSelected)
+                            if (k + i - 10 >= 11) {
+                                cellID = k + i - 10
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
                         }
                         if (emptyCells.contains(k + i + 20)) {
-                            madePlay(k + i + 20, butSelected)
+                            if (k + i + 30 <= 55) {
+                                cellID = k + i + 20
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
                         }
                     }
                 }
                 if (k <= 40 && i <= 4) {
                     if (player2.contains(k + i) && player2.contains(k + i + 11)) {
                         if (emptyCells.contains(k + i - 11)) {
-                            madePlay(k + i - 11, butSelected)
+                            if (k + i - 11 >= 11) {
+                                cellID = k + i - 11
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
                         }
                         if (emptyCells.contains(k + i + 22)) {
-                            madePlay(k + i + 22, butSelected)
+                            if (k + i + 22 <= 55) {
+                                cellID = k + i + 22
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                    }
+                }
+                if (k <= 50 && i <= 5) {
+                    if (player2.contains(k + i) && player2.contains(k + i - 9)) {
+                        if (emptyCells.contains(k + i - 18)) {
+                            if (k + i - 18 >= 11) {
+                                cellID = k + i - 18
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
+                        }
+                        if (emptyCells.contains(k + i + 9)) {
+                            if (k + i + 9 <= 55) {
+                                cellID = k + i + 9
+                                butSelected = whatButton(cellID)
+                                madePlay(cellID, butSelected)
+                                return
+                            }
                         }
                     }
                 }
             }
         }
-        */
 
+        // Well let's go random in the middle square otherwise
+        // We gonna roll for it 15 times, so it will not always pick middle square
+        // (if for example it makes unlucky roll 15 times on used cell
+
+        var middleCells = ArrayList<Int>()
+        for (k in 20..40 step 10)
+            for (i in 2..4)
+                middleCells.add(k+i)
+
+        for (n in 1..15){
+            val randMid = r.nextInt(middleCells.size-0)+0
+            cellID = middleCells[randMid]
+            if(emptyCells.contains(cellID)){
+                butSelected = whatButton(cellID)
+                madePlay(cellID, butSelected)
+                return
+            }
+        }
+
+        // TBA:  [x] [x] [_] [x] scenarios check
+        // Logic was supposed to be simple, so i'm leaving it so
+        // I can move on on another project
+
+        cellID = emptyCells[rand]
         butSelected = whatButton(cellID)
         madePlay(cellID,butSelected)
 
