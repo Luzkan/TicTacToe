@@ -4,11 +4,12 @@ import android.annotation.SuppressLint
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
+import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_play.*
-import java.lang.Thread.sleep
 import java.util.*
 
 class PlayActivity : AppCompatActivity() {
@@ -16,20 +17,15 @@ class PlayActivity : AppCompatActivity() {
     private var currentPlayer = 1
     private var aiMode = false
 
-    var player1 = ArrayList<Int>()
-    var player2 = ArrayList<Int>()
-    var emptyCells = ArrayList<Int>()
+    private var player1 = ArrayList<Int>()
+    private var player2 = ArrayList<Int>()
+    private var emptyCells = ArrayList<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play)
 
-        for (k in 10..50 step 10) {
-            for (i in 1..5) {
-                if(!(player1.contains(k+i) || player2.contains(k+i)))
-                    emptyCells.add(k + i)
-            }
-        }
+        makeEmptyCellsList()
 
         val extras = intent.extras
         if (extras != null) {
@@ -168,11 +164,11 @@ class PlayActivity : AppCompatActivity() {
 
         if(winner != 0) {
             if(winner == 1){
-                finish()
                 Toast.makeText(this, "Player 1 has won the game!", Toast.LENGTH_LONG).show()
+                dialogPop(winner)
             }else{
                 Toast.makeText(this, "Player 2 has won the game!", Toast.LENGTH_LONG).show()
-                finish()
+                dialogPop(winner)
             }
         }
 
@@ -596,4 +592,115 @@ class PlayActivity : AppCompatActivity() {
         }
         return butSelected
     }
+
+    private fun dialogPop(winner: Int) {
+        val builder = AlertDialog.Builder(this@PlayActivity)
+
+        if(winner == 1) {
+            builder.setTitle("Player Blue won!")
+        }else{
+            builder.setTitle("Player Red won!")
+        }
+        builder.setMessage("Do you want to play again?")
+
+        builder.setPositiveButton("HELL YES"){ _, _ ->
+
+            Toast.makeText(applicationContext,"New background for even more entertainment!",Toast.LENGTH_SHORT).show()
+
+            val rnd = Random()
+            val color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+            val ll = findViewById<ConstraintLayout>(R.id.activity_play)
+            ll.setBackgroundColor(color)
+
+            restartGame()
+        }
+
+        builder.setNegativeButton("No"){ _, _ ->
+            Toast.makeText(applicationContext,"I agree with you.",Toast.LENGTH_SHORT).show()
+            finish()
+        }
+
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
+    private fun restartGame() {
+
+        // Awful code incoming
+        // (just wanted to try dialog box with play again, so I didn't prepare beforehand for that
+        // originally  it was just finish() and Toast with toast for the winner)
+
+        button11.setBackgroundResource(android.R.drawable.btn_default)
+        button11.isEnabled=true
+        button13.setBackgroundResource(android.R.drawable.btn_default)
+        button13.isEnabled=true
+        button12.setBackgroundResource(android.R.drawable.btn_default)
+        button12.isEnabled=true
+        button14.setBackgroundResource(android.R.drawable.btn_default)
+        button14.isEnabled=true
+        button15.setBackgroundResource(android.R.drawable.btn_default)
+        button15.isEnabled=true
+
+        button21.setBackgroundResource(android.R.drawable.btn_default)
+        button21.isEnabled=true
+        button22.setBackgroundResource(android.R.drawable.btn_default)
+        button22.isEnabled=true
+        button23.setBackgroundResource(android.R.drawable.btn_default)
+        button23.isEnabled=true
+        button24.setBackgroundResource(android.R.drawable.btn_default)
+        button24.isEnabled=true
+        button25.setBackgroundResource(android.R.drawable.btn_default)
+        button25.isEnabled=true
+
+        button31.setBackgroundResource(android.R.drawable.btn_default)
+        button31.isEnabled=true
+        button32.setBackgroundResource(android.R.drawable.btn_default)
+        button32.isEnabled=true
+        button33.setBackgroundResource(android.R.drawable.btn_default)
+        button33.isEnabled=true
+        button34.setBackgroundResource(android.R.drawable.btn_default)
+        button34.isEnabled=true
+        button35.setBackgroundResource(android.R.drawable.btn_default)
+        button35.isEnabled=true
+
+        button41.setBackgroundResource(android.R.drawable.btn_default)
+        button41.isEnabled=true
+        button42.setBackgroundResource(android.R.drawable.btn_default)
+        button42.isEnabled=true
+        button43.setBackgroundResource(android.R.drawable.btn_default)
+        button43.isEnabled=true
+        button44.setBackgroundResource(android.R.drawable.btn_default)
+        button44.isEnabled=true
+        button45.setBackgroundResource(android.R.drawable.btn_default)
+        button45.isEnabled=true
+
+        button51.setBackgroundResource(android.R.drawable.btn_default)
+        button51.isEnabled=true
+        button52.setBackgroundResource(android.R.drawable.btn_default)
+        button52.isEnabled=true
+        button53.setBackgroundResource(android.R.drawable.btn_default)
+        button53.isEnabled=true
+        button54.setBackgroundResource(android.R.drawable.btn_default)
+        button54.isEnabled=true
+        button55.setBackgroundResource(android.R.drawable.btn_default)
+        button55.isEnabled=true
+
+        player1.clear()
+        player2.clear()
+        emptyCells.clear()
+        makeEmptyCellsList()
+        currentPlayer = 1
+    }
+
+    private fun makeEmptyCellsList(){
+
+        for (k in 10..50 step 10) {
+            for (i in 1..5) {
+                if (!(player1.contains(k + i) || player2.contains(k + i)))
+                    emptyCells.add(k + i)
+            }
+        }
+
+    }
 }
+
