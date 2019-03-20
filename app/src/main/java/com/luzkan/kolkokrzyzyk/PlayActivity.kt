@@ -180,6 +180,10 @@ class PlayActivity : AppCompatActivity() {
 
     private fun AILogic(){
 
+        // Prevents game from crashing on draw
+        if(emptyCells.isEmpty())
+            return
+
         // Go for a random move
         val r = Random()
         val rand = r.nextInt(emptyCells.size-0)+0
@@ -535,7 +539,7 @@ class PlayActivity : AppCompatActivity() {
         // We gonna roll for it 15 times, so it will not always pick middle square
         // (if for example it makes unlucky roll 15 times on used cell
 
-        var middleCells = ArrayList<Int>()
+        val middleCells = ArrayList<Int>()
         for (k in 20..40 step 10)
             for (i in 2..4)
                 middleCells.add(k+i)
