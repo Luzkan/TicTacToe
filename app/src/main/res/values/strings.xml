@@ -1,10 +1,51 @@
 <resources>
     <string name="app_name">Tic Tac Toe</string>
-    <string name="title_home">Home</string>
-    <string name="title_reset">Reset</string>
-    <string name="turn">Turn:</string>
+    <string name="profile">Profile</string>
+    <string name="add">Add</string>
     <string name="player">Player Blue</string>
+
+    <!--Register and Login Strings-->
+    <string name="signupalter">"New user? Sign up here!"</string>
+    <string name="loginalter">"Already have an account?"</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="sign_up">SIGN UP</string>
+    <string name="signup">"SIGN IN"</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="login">"LOG IN"</string>
+    <string name="username">Username</string>
+    <string name="email">Email</string>
+
+    <string name="join">Join Game</string>
+    <string name="resume">Resume Game</string>
+    <string name="invite">Invite to Play</string>
+
+
+    <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
+    <string name="facebook_application_id">2672329152795068</string>
+    <string name="fb_login_protocol_scheme">fb2672329152795068</string>
+
+
+    <string name="ok">Yes</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="settings_button">Settings button</string>
+    <string name="dummy">DUMMY</string>
+    <string name="delete_your_account">Delete your account</string>
+    <string name="log_out">Log out</string>
+    <string name="reset_password">Reset password</string>
+    <string name="change_your_email">Change your email</string>
+    <string name="settings">SETTINGS</string>
+    <string name="change_your_username">Change your username</string>
+    <string name="user_name">Username</string>
+    <string name="meme">Meme</string>
+    <string name="name">Name</string>
+    <string name="url">URL</string>
+    <string name="logotext">logoText</string>
+    <string name="logoimage">logoImage</string>
     <string name="ai">AI</string>
+    <string name="online">online</string>
     <string name="vs">VS</string>
-    <string name="tic_tac_toe">Tic Tac Toe</string>
+    <string name="back">Back</string>
+    <string name="settingsbut">Settings</string>
 </resources>

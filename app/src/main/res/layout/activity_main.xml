@@ -1,59 +1,244 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
+    android:id="@+id/lRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:animateLayoutChanges="true"
+    android:background="@color/colorBackgroundAlter"
+    android:gravity="center"
+    android:orientation="vertical">
 
-    <Button
-        android:id="@+id/playAI"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/logoLinear"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="@string/ai"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/playVS"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.906" />
+        android:layout_weight="0.3"
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/playVS"
-        android:layout_width="wrap_content"
+        <ImageView
+            android:id="@+id/logoImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:contentDescription="@string/logoimage"
+            android:scaleType="centerCrop"
+            android:tag="main"
+            app:srcCompat="@mipmap/ic_launcher_round" />
+
+        <ImageView
+            android:id="@+id/logoText"
+            android:layout_width="170dp"
+            android:layout_height="33dp"
+            android:layout_marginTop="5dp"
+            android:contentDescription="@string/logotext"
+            app:srcCompat="@drawable/logo" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lRegister"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="64dp"
-        android:text="@string/vs"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_weight="0.7"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="@string/tic_tac_toe"
-        android:textColor="@android:color/black"
-        android:textSize="60sp"
-        android:textStyle="italic"
-        app:layout_constraintBottom_toTopOf="@+id/playAI"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-</android.support.constraint.ConstraintLayout>
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="5dp"
+            android:background="@drawable/edit_text_round"
+            android:drawableStart="@drawable/ic_email_24dp"
+            android:drawablePadding="8dp"
+            android:ems="10"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:tag="false" />
+
+        <EditText
+            android:id="@+id/etUsername"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="5dp"
+            android:background="@drawable/edit_text_round"
+            android:drawableStart="@drawable/ic_person_24dp"
+            android:drawablePadding="8dp"
+            android:ems="10"
+            android:hint="@string/username"
+            android:inputType="textPersonName"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:tag="false" />
+
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="5dp"
+            android:background="@drawable/edit_text_round"
+            android:drawableStart="@drawable/ic_lock_24dp"
+            android:drawablePadding="8dp"
+            android:ems="10"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:tag="false" />
+
+        <EditText
+            android:id="@+id/etPasswordConfirm"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="5dp"
+            android:background="@drawable/edit_text_round"
+            android:drawableStart="@drawable/ic_lock_24dp"
+            android:drawablePadding="8dp"
+            android:ems="10"
+            android:hint="@string/confirm_password"
+            android:inputType="textPassword"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:tag="false" />
+
+        <TextView
+            android:id="@+id/tvError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:textAlignment="center"
+            android:textColor="#AA1B1B"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/playAI"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="48dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/ai"
+            android:textSize="30sp"
+            android:theme="@style/PrimaryFlatButton"
+            app:layout_constraintBottom_toTopOf="@+id/playMulti"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/playMulti"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/online"
+            android:onClick="playMultiClick"
+            android:textSize="30sp"
+            android:theme="@style/PrimaryFlatButton"
+            app:layout_constraintBottom_toTopOf="@+id/playVS"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/playVS"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="48dp"
+            android:text="@string/vs"
+            android:textSize="30sp"
+            android:theme="@style/PrimaryFlatButton"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/settingsbut"
+            android:textSize="30sp"
+            android:theme="@style/PrimaryFlatButton"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+            android:id="@+id/bSubmit"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:background="@drawable/button_round"
+            android:enabled="false"
+            android:onClick="bSubmitClick"
+            android:text="@string/sign_up"
+            android:textStyle="bold"
+            app:spinning_bar_color="#000"
+            app:spinning_bar_width="5dp" />
+
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/facebook_login"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_marginVertical="3dp"
+            android:onClick="showSignOptions"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            app:fb_defaultColor="#39579B"
+            app:fb_focusColor="#6183d2"
+            app:fb_fontIconResource="&#xf230;"
+            app:fb_fontIconSize="20sp"
+            app:fb_iconPaddingRight="10dp"
+            app:fb_iconPosition="left"
+            app:fb_radius="20dp"
+            app:fb_text="Facebook Connect"
+            app:fb_textColor="#ffffff"
+            app:fb_textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvChange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:onClick="tvChangeClick"
+            android:text="@string/already_have_an_account"
+            android:textColor="@color/ghostwhite"
+            android:textStyle="bold"
+            android:layout_marginBottom="32dp"/>
+
+        <Button
+            android:id="@+id/backToMain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/back"
+            android:textSize="16sp"
+            app:layout_constraintTop_toTopOf="@id/logoText"
+            android:background="@drawable/button_round2"
+            android:theme="@style/PrimaryBorderlassButton"
+            android:textColor="@color/ghostwhite"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/listOnline"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</LinearLayout>
