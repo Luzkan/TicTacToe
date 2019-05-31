@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/papayawhip"
+    tools:context="com.luzkan.tictactoe.activity.SettingsActivity">
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="8dp"
+        android:padding="12dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:text="@string/settings"
+        android:textColor="@color/colorTextAlter"
+        android:textSize="40sp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.47"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView6">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/username_change_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/papayawhip"
+                android:drawableStart="@drawable/ic_person_24dp"
+                android:drawablePadding="10dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="@string/change_your_username"
+                android:textAlignment="viewStart"
+                android:textSize="15sp" />
+
+            <View
+                android:id="@+id/divider4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/peachpuff" />
+
+            <Button
+                android:id="@+id/email_change_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/papayawhip"
+                android:drawableStart="@drawable/ic_email_24dp"
+                android:drawablePadding="10dp"
+                android:onClick="changeEmail"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="@string/change_your_email"
+                android:textAlignment="viewStart"
+                android:textSize="15sp" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/peachpuff" />
+
+            <Button
+                android:id="@+id/password_reset_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/papayawhip"
+                android:drawableStart="@drawable/ic_lock_24dp"
+                android:drawablePadding="10dp"
+                android:onClick="passwordReset"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="@string/reset_password"
+                android:textAlignment="viewStart"
+                android:textSize="15sp" />
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/peachpuff" />
+
+            <Button
+                android:id="@+id/delete_account_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/papayawhip"
+                android:drawableStart="@drawable/ic_delete_forever_24dp"
+                android:drawablePadding="10dp"
+                android:onClick="deleteUser"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="@string/delete_your_account"
+                android:textAlignment="viewStart"
+                android:textSize="15sp" />
+
+            <View
+                android:id="@+id/divider3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/peachpuff" />
+
+            <Button
+                android:id="@+id/logout_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/papayawhip"
+                android:drawableStart="@drawable/ic_power_24dp"
+                android:drawablePadding="10dp"
+                android:onClick="logout"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="@string/log_out"
+                android:textAlignment="viewStart"
+                android:textSize="15sp" />
+
+            <View
+                android:id="@+id/divider5"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/peachpuff" />
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>

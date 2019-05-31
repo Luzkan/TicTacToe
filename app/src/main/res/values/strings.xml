@@ -48,4 +48,6 @@
     <string name="vs">VS</string>
     <string name="back">Back</string>
     <string name="settingsbut">Settings</string>
+    <string name="nickname">Nickname</string>
+    <string name="invite_to_play">Invite to Play</string>
 </resources>
