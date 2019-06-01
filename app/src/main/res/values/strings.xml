@@ -20,11 +20,9 @@
     <string name="resume">Resume Game</string>
     <string name="invite">Invite to Play</string>
 
-
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
-    <string name="facebook_application_id">2672329152795068</string>
-    <string name="fb_login_protocol_scheme">fb2672329152795068</string>
-
+    <string name="facebook_application_id" translatable="false">673240646422713</string>
+    <string name="fb_login_protocol_scheme">fb673240646422713</string>
 
     <string name="ok">Yes</string>
     <string name="no">No</string>

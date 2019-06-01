@@ -34,30 +34,29 @@ class SettingsActivity : AppCompatActivity() {
     fun changeEmail(view: View) {
     }
 
-    fun changeUserName(view: View) {
+    fun changeUsername(view: View) {
     }
 
-    // (PR) Sends an email with password reset link.
+    // Sends an email with password reset link.
     fun passwordReset(view: View) {
         password_reset_button.isEnabled = false
         val auth = FirebaseAuth.getInstance()
         auth.currentUser?.email?.also { userEmail ->
-            auth.sendPasswordResetEmail(userEmail)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Toast.makeText(this, "Email sent.", Toast.LENGTH_SHORT).show()
-                        Log.d("SETTINGS", "Email sent.")
-                        password_reset_button.isEnabled = true
-                    } else {
-                        Toast.makeText(this, "Something went wrong.", Toast.LENGTH_SHORT).show()
-                        Log.d("SETTINGS", "Email sending error.")
-                        password_reset_button.isEnabled = true
-                    }
+            auth.sendPasswordResetEmail(userEmail).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(this, "Email sent.", Toast.LENGTH_SHORT).show()
+                    Log.d("SETTINGS", "Email sent.")
+                    password_reset_button.isEnabled = true
+                } else {
+                    Toast.makeText(this, "Something went wrong.", Toast.LENGTH_SHORT).show()
+                    Log.d("SETTINGS", "Email sending error.")
+                    password_reset_button.isEnabled = true
                 }
+            }
         }
     }
 
-    // (PR) Deleting user
+    // Deleting user dialog
     fun deleteUser(view: View) {
         delete_account_button.isEnabled = false
         val alertDialog = this.let { settingsActivity ->
@@ -66,8 +65,7 @@ class SettingsActivity : AppCompatActivity() {
                 setPositiveButton(R.string.yes) { _, _ ->
                     // User clicked Yes button
                     val user = FirebaseAuth.getInstance().currentUser
-                    user?.delete()
-                        ?.addOnCompleteListener { task ->
+                    user?.delete()?.addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 deleteUserFromDB(user)
                                 Log.d("SETTINGS", "User account deleted.")
@@ -97,31 +95,14 @@ class SettingsActivity : AppCompatActivity() {
         alertDialog.show()
     }
 
-    // (PR) Deleting user and memes added by the user.
+    // Deleting user function
     private fun deleteUserFromDB(user: FirebaseUser) {
         val db = FirebaseFirestore.getInstance()
         val userID = user.uid
-        //val storage = FirebaseStorage.getInstance()
-        //val memesRef = storage.reference.child("memes")
 
-        // Deleting memes
-        db.collection("Memes")
-            .whereEqualTo("userId", userID)
-            .get()
-            .addOnSuccessListener { memes ->
-                for (meme in memes) {
-                    Log.d("USER_DELETE", "meme: $meme")
-                    //memesRef.child("$meme.jpg") // deleting from storage
-                    meme.reference.delete()
-                }
-            }
-
-        // Deleting user
-        db.collection("Users").document(userID)
-            .delete()
-            .addOnSuccessListener {
-                Toast.makeText(this, "User deleted from Users collection.", Toast.LENGTH_SHORT).show()
-                Log.d("SETTINGS", "User deleted from Users collection.")
-            }
+        db.collection("Users").document(userID).delete().addOnSuccessListener {
+            Toast.makeText(this, "User deleted from Users collection.", Toast.LENGTH_SHORT).show()
+            Log.d("SETTINGS", "User deleted from Users collection.")
+        }
     }
 }

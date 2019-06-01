@@ -46,58 +46,54 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dbs: FirebaseFirestore
     private lateinit var db: FirebaseDatabase
 
+    // Watch for logged in users and put them into User List
     private fun fetchUsers(currentUser: FirebaseUser) {
-        FirebaseDatabase.getInstance().reference.child("Users")
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    users.clear()
-                    for (snapshot in dataSnapshot.children) {
-                        if(snapshot.hasChild("connections")) {
-                            val user = snapshot.child("info").getValue(User::class.java)
-                            if (snapshot.key != currentUser.displayName) {
-                                users.add(user!!)
-                            }
-                        }
-                    }
-                    adapter!!.notifyDataSetChanged()
-                }
-                override fun onCancelled(databaseError: DatabaseError) {}
-            })
+        FirebaseDatabase.getInstance().reference.child("Users").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                // Clear on change detected and re-add (if it's not the current user itself)
+                users.clear()
+                for (snapshot in dataSnapshot.children)
+                    if(snapshot.hasChild("connections"))
+                        if (snapshot.key != currentUser.displayName) users.add(snapshot.child("info").getValue(User::class.java)!!)
+
+                // Notify adapter
+                adapter!!.notifyDataSetChanged()
+            }
+            override fun onCancelled(databaseError: DatabaseError) {}
+        })
     }
 
+    // Check if a player is currently waiting for current user in a game
     private fun checkIfPlays(lookForLobby: String, createLobby: String) {
-        FirebaseDatabase.getInstance().reference.child("Games")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    var opponentInLobby = false
-                    for (snapshot in dataSnapshot.children) {
-                        if(snapshot.key == lookForLobby) {
-                            val someoneConnected = snapshot.child("connected").hasChildren()
-                            if (someoneConnected){
-                                Toast.makeText(applicationContext, "Joining game: $lookForLobby",Toast.LENGTH_SHORT).show()
-                                val first = dataSnapshot.child(createLobby).child("first").getValue(String::class.java)
-                                if(first == getCurrentUsername()) playMultiplayer(true, lookForLobby, false)
-                                else playMultiplayer(false, lookForLobby, false)
-                                opponentInLobby = true
-                            }
-                        }
-                    }
-                    if(!opponentInLobby){
-                        val resumingGame = dataSnapshot.child(createLobby).child("map").hasChildren()
-                        if (resumingGame) Toast.makeText(applicationContext, "Resuming game: " + createLobby, Toast.LENGTH_SHORT).show()
-                        else Toast.makeText(applicationContext, "Starting game: $createLobby", Toast.LENGTH_SHORT).show()
+        FirebaseDatabase.getInstance().reference.child("Games").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-                        if(dataSnapshot.child(createLobby).child("first").hasChildren()){
-                            val first = dataSnapshot.child(createLobby).child("first").getValue(String::class.java)
-                            if(first == getCurrentUsername()) playMultiplayer(true, createLobby, false)
-                            else playMultiplayer(false, createLobby, false)
-                        }else{
-                            playMultiplayer(true, createLobby, true)
-                        }
+                // Looking for lobby - if now found - it will proceed to create a new lobby
+                if(dataSnapshot.child(lookForLobby).child("connected").hasChildren()){
+                    // Found lobby, detecting if player was first (on resume case) or not
+                    Toast.makeText(applicationContext, "Joining game: $lookForLobby",Toast.LENGTH_SHORT).show()
+                    val first = dataSnapshot.child(createLobby).child("first").getValue(String::class.java)
+                    if (first == getCurrentUsername()) playMultiplayer(true, lookForLobby, false)
+                    else                               playMultiplayer(false, lookForLobby, false)
+                }else{
+                    // Check if there was a game in progress before
+                    val resumingGame = dataSnapshot.child(createLobby).child("map").hasChildren()
+                    if (resumingGame) Toast.makeText(applicationContext, "Resuming game: $createLobby", Toast.LENGTH_SHORT).show()
+                    else              Toast.makeText(applicationContext, "Starting game: $createLobby", Toast.LENGTH_SHORT).show()
+
+                    // Detecting if player was first (on resume case) or not else creating new lobby
+                    if (dataSnapshot.child(createLobby).child("first").hasChildren()){
+                        val first = dataSnapshot.child(createLobby).child("first").getValue(String::class.java)
+                        if (first == getCurrentUsername()) playMultiplayer(true, createLobby, false)
+                        else                               playMultiplayer(false, createLobby, false)
+                    }else{
+                        playMultiplayer(true, createLobby, true)
                     }
                 }
-                override fun onCancelled(databaseError: DatabaseError) {}
-            })
+            }
+            override fun onCancelled(databaseError: DatabaseError) {}
+        })
     }
 
     // Animation after Splash Screen
@@ -113,11 +109,12 @@ class MainActivity : AppCompatActivity() {
         bSubmit.background = getDrawable(R.drawable.button_round2)
     }
 
-    // Setting LoggedIn to make "main" application view
+    // Setting LoggedIn and Online Features
     @SuppressLint("PrivateResource")
     private val runnableStartApp = {
         loggedIn = true
-        setMainPanel()
+        onlineMode()
+        setLobby("main")
     }
 
     // List of account types we can sign in
@@ -139,7 +136,7 @@ class MainActivity : AppCompatActivity() {
 
         // Log out
         if (intent.getBooleanExtra("logout", false)) {
-            setLoginPanel()
+            setLobby("login")
         }
 
         // Facebook login fix
@@ -148,48 +145,19 @@ class MainActivity : AppCompatActivity() {
         // Splash Screen & Load User List
         handler.postDelayed(runnableSplash, 1500)
         if (FirebaseAuth.getInstance().currentUser != null) {
-            
-            val currentUser = FirebaseAuth.getInstance().currentUser
-            val myConnectionsRef = db.getReference("/Users/" + currentUser!!.displayName + "/connections")
-            val pushMyInfo = db.getReference("/Users/" + currentUser.displayName + "/info")
-            val lastOnlineRef = db.getReference("/Users/" + currentUser.displayName + "/lastOnline")
-            val connectedRef = db.getReference(".info/connected")
-
-            connectedRef.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val connected = snapshot.getValue(Boolean::class.java) ?: false
-                    if (connected) {
-                        val con = myConnectionsRef.push()
-                        pushMyInfo.setValue(currentUser)
-                        // When this device disconnects, remove it
-                        con.onDisconnect().removeValue()
-                        lastOnlineRef.onDisconnect().setValue(ServerValue.TIMESTAMP)
-                        con.setValue(java.lang.Boolean.TRUE)
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) { }
-            })
-
-            // List of logged users
-            fetchUsers(currentUser)
-            adapter = OnlineAdapter(users)
-            listOnline.adapter = adapter
-            listOnline.layoutManager = LinearLayoutManager(this)
 
             // Notifications PushID getter
-            FirebaseInstanceId.getInstance().instanceId
-                .addOnCompleteListener(OnCompleteListener { task ->
-                    if (!task.isSuccessful) return@OnCompleteListener
-                    // Token for Notification Push
-                    Log.d("Token", task.result?.token)
-                })
+            FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) return@OnCompleteListener
+                // Token for Notification Push
+                Log.d("Token", task.result?.token)
+            })
 
             Log.d("USER","${FirebaseAuth.getInstance().currentUser?.displayName} ${FirebaseAuth.getInstance().currentUser?.email}")
             runnableStartApp()
         }
 
-        // Set up buttons in menu after logging in
+        // Buttons click actions in main lobby
         playAI.setOnClickListener{
             val intent = Intent(this, PlayActivity::class.java)
             intent.putExtra("aiMode", true)
@@ -205,7 +173,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         backToMain.setOnClickListener{
-            setMainPanel()
+            setLobby("main")
         }
 
         settings.setOnClickListener{
@@ -213,8 +181,38 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Set up visibility of everything to look like main menu
-        setMainPanel()
+        // Set up visibility of everything to look like main menu on start
+        setLobby("main")
+    }
+
+    // Set up online database features
+    private fun onlineMode() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val myConnectionsRef = db.getReference("/Users/" + currentUser!!.displayName + "/connections")
+        val pushMyInfo = db.getReference("/Users/" + currentUser.displayName + "/info")
+        val lastOnlineRef = db.getReference("/Users/" + currentUser.displayName + "/lastOnline")
+        val connectedRef = db.getReference(".info/connected")
+
+        connectedRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val connected = snapshot.getValue(Boolean::class.java) ?: false
+                if (connected) {
+                    val con = myConnectionsRef.push()
+                    pushMyInfo.setValue(currentUser)
+                    // When this device disconnects, remove it
+                    con.onDisconnect().removeValue()
+                    con.setValue(java.lang.Boolean.TRUE)
+                    lastOnlineRef.onDisconnect().setValue(ServerValue.TIMESTAMP)
+                }
+            }
+            override fun onCancelled(error: DatabaseError) { }
+        })
+
+        // List of logged users
+        fetchUsers(currentUser)
+        adapter = OnlineAdapter(users)
+        listOnline.adapter = adapter
+        listOnline.layoutManager = LinearLayoutManager(this)
     }
 
     // Invite button creates two options for gameLobby names and checks
@@ -225,31 +223,27 @@ class MainActivity : AppCompatActivity() {
         checkIfPlays(lobbyExist, createLobby)
     }
 
-
     private fun playMultiplayer(first: Boolean, lobbyName: String, newFirst: Boolean) {
-        val me = getCurrentUsername()
-
         // Intents to set up multiplayer game
         val intent = Intent(this, PlayActivity::class.java)
         intent.putExtra("online", true)
         intent.putExtra("gameName", lobbyName)
-        if (first) {
-            intent.putExtra("first", true)
-        }else{
-            intent.putExtra("first", false)
+
+        // Handle who goes first depending on the existence (or its absence) of the game
+        if (first) intent.putExtra("first", true)
+        else       intent.putExtra("first", false)
+
+        if (newFirst){
+            val pushGameInfo = db.getReference("/Games/$lobbyName/first")
+            pushGameInfo.setValue(getCurrentUsername())
         }
 
         // Prep database to handle the game
-        if(newFirst){
-            val pushGameInfo = db.getReference("/Games/" + lobbyName + "/first")
-            pushGameInfo.setValue(me)
-        }
-
-        val pushGameInfo = db.getReference("/Games/" + lobbyName + "/gameInProgress")
+        val pushGameInfo = db.getReference("/Games/$lobbyName/gameInProgress")
         pushGameInfo.onDisconnect().setValue(java.lang.Boolean.FALSE)
         pushGameInfo.setValue(java.lang.Boolean.TRUE)
 
-        val myConnectionsRef = db.getReference("/Games/" + lobbyName + "/connected")
+        val myConnectionsRef = db.getReference("/Games/$lobbyName/connected")
         val con = myConnectionsRef.push()
         con.onDisconnect().removeValue()
         con.setValue(java.lang.Boolean.TRUE)
@@ -270,14 +264,12 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == FB_REQUEST_CODE) {
-            // (MJ) Response:
+            // Response:
             IdpResponse.fromResultIntent(data)
             if (resultCode == Activity.RESULT_OK) {
-                // (MJ) User:
+                // User:
                 FirebaseAuth.getInstance().currentUser
                 startApp()
-            } else {
-
             }
         }
     }
@@ -300,6 +292,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 setError("Those passwords didn't match.")
             }
+
         } else {
             FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).addOnSuccessListener {
                 startApp()
@@ -336,22 +329,13 @@ class MainActivity : AppCompatActivity() {
     // Dynamic single editText check
     private fun checkIfEmpty(editable: EditText, register: Boolean) {
         editable.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 editable.tag = p0!!.isNotEmpty()
-                if (register) {
-                    bSubmit.isEnabled =
-                        etEmail.tag.toString() == "true" && etPassword.tag.toString() == "true" && etUsername.tag.toString() == "true" && etPasswordConfirm.tag.toString() == "true"
-                } else {
-                    bSubmit.isEnabled = etEmail.tag.toString() == "true" && etPassword.tag.toString() == "true"
-                }
-
+                if (register) bSubmit.isEnabled = etEmail.tag.toString() == "true" && etPassword.tag.toString() == "true" && etUsername.tag.toString() == "true" && etPasswordConfirm.tag.toString() == "true"
+                else          bSubmit.isEnabled = etEmail.tag.toString() == "true" && etPassword.tag.toString() == "true"
             }
+            override fun afterTextChanged(p0: Editable?) {}
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
         })
     }
 
@@ -361,50 +345,40 @@ class MainActivity : AppCompatActivity() {
         handler.postDelayed(runnableButton, 800)
     }
 
-
     @SuppressLint("SetTextI18n")
     private fun createUser(email: String, password: String, userName: String) {
-
         // Check if username is taken
         dbs.document("Users/$userName").get().addOnSuccessListener {
 
-            val user = it.toObject(User::class.java)
-            if (user == null) {
+            // If user is null
+            if (it.toObject(User::class.java) == null) {
+
                 // Checking if email is taken
-                FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            val uid = FirebaseAuth.getInstance().uid ?: ""
-                            val newUser = User(uid, email, userName)
+                FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val uid = FirebaseAuth.getInstance().uid ?: ""
+                        val newUser = User(uid, email, userName)
 
-                            FirebaseAuth.getInstance().currentUser!!.updateProfile(
-                                UserProfileChangeRequest.Builder().setDisplayName(
-                                    userName
-                                ).build()
-                            )
+                        FirebaseAuth.getInstance().currentUser!!.updateProfile(
+                            UserProfileChangeRequest.Builder().setDisplayName(userName).build()
+                        )
 
-                            // Creating a new user in database
-                            dbs.collection("Users").document(FirebaseAuth.getInstance().currentUser!!.uid).set(newUser)
-                                .addOnSuccessListener {
-                                    startApp()
-                                }.addOnFailureListener { exception: java.lang.Exception ->
-                                    setError(exception.message + ".")
-                                }
-                        }
-                    }.addOnFailureListener {
-                        if (it.message?.length!! > 70) {
-                            setError(it.message!!.takeLastWhile { character -> character != '[' }.take(41) + ".")
-                        } else {
-                            setError(it.message.toString())
+                        // Creating a new user in database
+                        dbs.collection("Users").document(FirebaseAuth.getInstance().currentUser!!.uid).set(newUser).addOnSuccessListener {
+                            startApp()
+                        }.addOnFailureListener {
+                                exception: java.lang.Exception -> setError(exception.message + ".")
                         }
                     }
-            } else {
-                setError("This username is taken.")
-            }
+                }.addOnFailureListener {
+                    if (it.message?.length!! > 70) setError(it.message!!.takeLastWhile { character -> character != '[' }.take(41) + ".")
+                    else                           setError(it.message.toString())
+                }
+            } else setError("This username is taken.")
         }
     }
 
-    // Starting app on logged account
+    // Setting App after finished logging in/register like for a logged in user on app launch
     private fun startApp() {
         setSubmitButton(R.drawable.tick)
         handler.postDelayed(runnableStartApp, 500)
@@ -412,26 +386,24 @@ class MainActivity : AppCompatActivity() {
 
     // Changing mode login/sign up on textView click
     fun tvChangeClick(view: View) {
-        tvError.visibility = View.GONE
+        resetError()
         when {
-            logoImage.tag == "main" -> setMainPanel()
-            logoImage.tag == "signup" -> setLoginPanel()
-            logoImage.tag == "login" -> setSignUpPanel()
+            logoImage.tag == "main" -> setLobby("main")
+            logoImage.tag == "signup" -> setLobby("login")
+            logoImage.tag == "login" -> setLobby("signup")
         }
     }
 
     // Changing mode login/sign up on textView click
     fun playMultiClick(view: View) {
-        if(!loggedIn) {
-            setLoginPanel()
-        }else{
-            setLobbyPanel()
-        }
+        if (!loggedIn) setLobby("login")
+        else           setLobby("lobby")
     }
 
-    private fun setLobbyPanel() {
-        tvError.text = ""
+    private fun setLobby(panel: String){
+        resetError()
         TransitionManager.beginDelayedTransition(lRoot)
+
         etEmail.visibility = View.GONE
         etUsername.visibility = View.GONE
         etPassword.visibility = View.GONE
@@ -439,87 +411,53 @@ class MainActivity : AppCompatActivity() {
         facebook_login.visibility = View.GONE
         tvChange.visibility = View.GONE
         bSubmit.visibility = View.GONE
+        settings.visibility = View.GONE
+
         playAI.visibility = View.GONE
         playMulti.visibility = View.GONE
         playVS.visibility = View.GONE
-        settings.visibility = View.GONE
-
-        // Show only list of users & back button
-        backToMain.visibility = View.VISIBLE
-        listOnline.visibility = View.VISIBLE
-
-        logoImage.tag = "lobby"
-        checkBlank(false)
-    }
-
-    private fun setMainPanel() {
-        tvError.text = ""
-        TransitionManager.beginDelayedTransition(lRoot)
-        etEmail.visibility = View.GONE
-        etUsername.visibility = View.GONE
-        etPassword.visibility = View.GONE
-        etPasswordConfirm.visibility = View.GONE
-        facebook_login.visibility = View.GONE
-        tvChange.visibility = View.GONE
-        bSubmit.visibility = View.GONE
+        listOnline.visibility = View.GONE
         backToMain.visibility = View.GONE
-        listOnline.visibility = View.GONE
-        settings.visibility = View.GONE
 
-        // Show only buttons for gameplay options
-        playAI.visibility = View.VISIBLE
-        playMulti.visibility = View.VISIBLE
-        playVS.visibility = View.VISIBLE
-        if (loggedIn) settings.visibility = View.VISIBLE
+        if(panel == "main"){
+            logoImage.tag = "main"
+            playAI.visibility = View.VISIBLE
+            playMulti.visibility = View.VISIBLE
+            playVS.visibility = View.VISIBLE
+            if (loggedIn) settings.visibility = View.VISIBLE
 
-        logoImage.tag = "main"
-        // Dynamic enabling submit button
+        }else if(panel == "lobby"){
+            logoImage.tag = "lobby"
+            listOnline.visibility = View.VISIBLE
+            backToMain.visibility = View.VISIBLE
+
+        }else if(panel == "login"){
+            logoImage.tag = "login"
+            etEmail.visibility = View.VISIBLE
+            etPassword.visibility = View.VISIBLE
+            facebook_login.visibility = View.VISIBLE
+            tvChange.visibility = View.VISIBLE
+            tvChange.text = getString(R.string.signupalter)
+            bSubmit.visibility = View.VISIBLE
+            bSubmit.text = getString(R.string.login)
+            backToMain.visibility = View.VISIBLE
+
+        }else if(panel == "signup"){
+            logoImage.tag = "signup"
+            etEmail.visibility = View.VISIBLE
+            etPassword.visibility = View.VISIBLE
+            facebook_login.visibility = View.VISIBLE
+            tvChange.visibility = View.VISIBLE
+            tvChange.text = getString(R.string.loginalter)
+            bSubmit.visibility = View.VISIBLE
+            bSubmit.text = getString(R.string.signup)
+            backToMain.visibility = View.VISIBLE
+            etUsername.visibility = View.VISIBLE
+            etPasswordConfirm.visibility = View.VISIBLE
+            backToMain.visibility = View.VISIBLE
+        }
+
         checkBlank(false)
-    }
-
-    private fun setLoginPanel() {
-        tvError.text = ""
-        TransitionManager.beginDelayedTransition(lRoot)
-        etUsername.visibility = View.GONE
-        etPasswordConfirm.visibility = View.GONE
-        playAI.visibility = View.GONE
-        playMulti.visibility = View.GONE
-        playVS.visibility = View.GONE
-        listOnline.visibility = View.GONE
-        settings.visibility = View.GONE
-
-        // Set register stuff
-        etEmail.visibility = View.VISIBLE
-        etPassword.visibility = View.VISIBLE
-        facebook_login.visibility = View.VISIBLE
-        tvChange.visibility = View.VISIBLE
-        bSubmit.visibility = View.VISIBLE
-        backToMain.visibility = View.VISIBLE
-
-        tvChange.text = getString(R.string.signupalter)
-        bSubmit.text = getString(R.string.login)
-        logoImage.tag = "login"
-        checkBlank(false)
-    }
-
-    private fun setSignUpPanel() {
-        tvError.text = ""
-        TransitionManager.beginDelayedTransition(lRoot)
-        playAI.visibility = View.GONE
-        playMulti.visibility = View.GONE
-        playVS.visibility = View.GONE
-        listOnline.visibility = View.GONE
-        settings.visibility = View.GONE
-
-        // Set up login stuff
-        backToMain.visibility = View.VISIBLE
-        etUsername.visibility = View.VISIBLE
-        etPasswordConfirm.visibility = View.VISIBLE
-
-        tvChange.text = getString(R.string.loginalter)
-        bSubmit.text = getString(R.string.signup)
-        logoImage.tag = "signup"
-        checkBlank(true)
     }
 
     // Hiding keyboard when click outside the EditText

@@ -41,6 +41,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/papayawhip"
+                android:onClick="changeUsername"
                 android:drawableStart="@drawable/ic_person_24dp"
                 android:drawablePadding="10dp"
                 android:paddingStart="20dp"
